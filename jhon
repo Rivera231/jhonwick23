@@ -1,0 +1,284 @@
+private static final HashMap<String, Double> userAccounts = new HashMap<>();
+    private static final HashMap<String, LinkedList<String>> transactionHistory = new HashMap<>();
+    private static String currentUser = null;
+
+    public static void main(String[] args) {
+        runWalletApp();
+    }
+
+    private static void runWalletApp() {
+        while (true) {
+            if (currentUser == null) {
+                showLoginMenu();
+            } else {
+                showMainMenu();
+            }
+        }
+    }
+
+    private static void showLoginMenu() {
+        String[] loginOptions = {"Login", "Sign Up", "Exit"};
+        int loginChoice = JOptionPane.showOptionDialog(null, "Welcome to the Complex Wallet App!\nSelect an option:",
+                "Login Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, loginOptions, loginOptions[0]);
+
+        switch (loginChoice) {
+            case 0 -> login();
+            case 1 -> signUp();
+            case 2 -> exitApp();
+        }
+    }
+
+    private static void login() {
+        String username = JOptionPane.showInputDialog("Enter your username:");
+        if (userAccounts.containsKey(username)) {
+            currentUser = username;
+            JOptionPane.showMessageDialog(null, "Login successful. Welcome, " + currentUser + "!", "Login", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid username. Please sign up or try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void signUp() {
+        String newUsername = JOptionPane.showInputDialog("Enter a new username:");
+        if (!userAccounts.containsKey(newUsername)) {
+            userAccounts.put(newUsername, 0.0);
+            transactionHistory.put(newUsername, new LinkedList<>());
+            currentUser = newUsername;
+            JOptionPane.showMessageDialog(null, "Account created successfully. Welcome, " + currentUser + "!", "Sign Up", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Username already exists. Please choose a different username.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void showMainMenu() {
+        String[] mainOptions = {"Check Balance", "Deposit", "Withdraw", "Transfer", "Transaction History", "Logout"};
+        int mainChoice = JOptionPane.showOptionDialog(null, "Select an option:", "Main Menu",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, mainOptions, mainOptions[0]);
+
+        switch (mainChoice) {
+            case 0 -> checkBalance();
+            case 1 -> deposit();
+            case 2 -> withdraw();
+            case 3 -> transfer();
+            case 4 -> showTransactionHistory();
+            case 5 -> logout();
+        }
+    }
+
+    private static void checkBalance() {
+        JOptionPane.showMessageDialog(null, "Your balance is: $" + userAccounts.get(currentUser), "Balance Inquiry", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void deposit() {
+        double amount = Double.parseDouble(JOptionPane.showInputDialog("Enter the deposit amount:"));
+        if (amount > 0) {
+            userAccounts.put(currentUser, userAccounts.get(currentUser) + amount);
+            updateTransactionHistory("Deposit: +$" + amount);
+            JOptionPane.showMessageDialog(null, "Deposit successful! Current balance: $" + userAccounts.get(currentUser), "Deposit", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid deposit amount. Please enter a positive value.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void withdraw() {
+        double amount = Double.parseDouble(JOptionPane.showInputDialog("Enter the withdrawal amount:"));
+        if (amount > 0 && amount <= userAccounts.get(currentUser)) {
+            userAccounts.put(currentUser, userAccounts.get(currentUser) - amount);
+            updateTransactionHistory("Withdrawal: -$" + amount);
+            JOptionPane.showMessageDialog(null, "Withdrawal successful! Current balance: $" + userAccounts.get(currentUser), "Withdrawal", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid withdrawal amount or insufficient funds.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void transfer() {
+        String recipient = JOptionPane.showInputDialog("Enter the username of the recipient:");
+        if (userAccounts.containsKey(recipient)) {
+            double amount = Double.parseDouble(JOptionPane.showInputDialog("Enter the transfer amount:"));
+            if (amount > 0 && amount <= userAccounts.get(currentUser)) {
+                userAccounts.put(currentUser, userAccounts.get(currentUser) - amount);
+                userAccounts.put(recipient, userAccounts.get(recipient) + amount);
+                updateTransactionHistory("Transfer to " + recipient + ": -$" + amount);
+                transactionHistory.get(recipient).add("Transfer from " + currentUser + ": +$" + amount);
+                JOptionPane.showMessageDialog(null, "Transfer successful! Current balance: $" + userAccounts.get(currentUser), "Transfer", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid transfer amount or insufficient funds.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Recipient not found. Please enter a valid username.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void showTransactionHistory() {
+        StringBuilder transactionSummary = new StringBuilder("Transaction History:\n");
+        LinkedList<String> transactions = transactionHistory.get(currentUser);
+        for (String transaction : transactions) {
+            transactionSummary.append(transaction).append("\n");
+        }
+        JOptionPane.showMessageDialog(null, transactionSummary.toString(), "Transaction History", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void updateTransactionHistory(String transaction) {
+        LinkedList<String> transactions = transactionHistory.get(currentUser);
+        transactions.addFirst(transaction);
+        // Keep only the last 5 transactions for brevity
+        if (transactions.size() > 5) {
+            transactions.removeLast();
+        }
+    }
+
+    private static void logout() {
+        JOptionPane.showMessageDialog(null, "Logout successful. Thank you, " + currentUser + "!", "Logout", JOptionPane.INFORMATION_MESSAGE);
+        currentUser = null;
+    }
+
+    private static void exitApp() {
+        JOptionPane.showMessageDialog(null, "Thank you for using the ERNESTWALLET   ! Goodbye.", "Exit", JOptionPane.INFORMATION_MESSAGE);
+        System.exit(0);
+    }
+}
+import javax.swing.JOptionPane;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+public class ERNESTWALLET {
+
+    private static final HashMap<String, Double> userAccounts = new HashMap<>();
+    private static final HashMap<String, LinkedList<String>> transactionHistory = new HashMap<>();
+    private static String currentUser = null;
+
+    public static void main(String[] args) {
+        runWalletApp();
+    }
+
+    private static void runWalletApp() {
+        while (true) {
+            if (currentUser == null) {
+                showLoginMenu();
+            } else {
+                showMainMenu();
+            }
+        }
+    }
+
+    private static void showLoginMenu() {
+        String[] loginOptions = {"Login", "Sign Up", "Exit"};
+        int loginChoice = JOptionPane.showOptionDialog(null, "Welcome to the Complex Wallet App!\nSelect an option:",
+                "Login Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, loginOptions, loginOptions[0]);
+
+        switch (loginChoice) {
+            case 0 -> login();
+            case 1 -> signUp();
+            case 2 -> exitApp();
+        }
+    }
+
+    private static void login() {
+        String username = JOptionPane.showInputDialog("Enter your username:");
+        if (userAccounts.containsKey(username)) {
+            currentUser = username;
+            JOptionPane.showMessageDialog(null, "Login successful. Welcome, " + currentUser + "!", "Login", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid username. Please sign up or try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void signUp() {
+        String newUsername = JOptionPane.showInputDialog("Enter a new username:");
+        if (!userAccounts.containsKey(newUsername)) {
+            userAccounts.put(newUsername, 0.0);
+            transactionHistory.put(newUsername, new LinkedList<>());
+            currentUser = newUsername;
+            JOptionPane.showMessageDialog(null, "Account created successfully. Welcome, " + currentUser + "!", "Sign Up", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Username already exists. Please choose a different username.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void showMainMenu() {
+        String[] mainOptions = {"Check Balance", "Deposit", "Withdraw", "Transfer", "Transaction History", "Logout"};
+        int mainChoice = JOptionPane.showOptionDialog(null, "Select an option:", "Main Menu",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, mainOptions, mainOptions[0]);
+
+        switch (mainChoice) {
+            case 0 -> checkBalance();
+            case 1 -> deposit();
+            case 2 -> withdraw();
+            case 3 -> transfer();
+            case 4 -> showTransactionHistory();
+            case 5 -> logout();
+        }
+    }
+
+    private static void checkBalance() {
+        JOptionPane.showMessageDialog(null, "Your balance is: $" + userAccounts.get(currentUser), "Balance Inquiry", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void deposit() {
+        double amount = Double.parseDouble(JOptionPane.showInputDialog("Enter the deposit amount:"));
+        if (amount > 0) {
+            userAccounts.put(currentUser, userAccounts.get(currentUser) + amount);
+            updateTransactionHistory("Deposit: +$" + amount);
+            JOptionPane.showMessageDialog(null, "Deposit successful! Current balance: $" + userAccounts.get(currentUser), "Deposit", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid deposit amount. Please enter a positive value.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void withdraw() {
+        double amount = Double.parseDouble(JOptionPane.showInputDialog("Enter the withdrawal amount:"));
+        if (amount > 0 && amount <= userAccounts.get(currentUser)) {
+            userAccounts.put(currentUser, userAccounts.get(currentUser) - amount);
+            updateTransactionHistory("Withdrawal: -$" + amount);
+            JOptionPane.showMessageDialog(null, "Withdrawal successful! Current balance: $" + userAccounts.get(currentUser), "Withdrawal", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid withdrawal amount or insufficient funds.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void transfer() {
+        String recipient = JOptionPane.showInputDialog("Enter the username of the recipient:");
+        if (userAccounts.containsKey(recipient)) {
+            double amount = Double.parseDouble(JOptionPane.showInputDialog("Enter the transfer amount:"));
+            if (amount > 0 && amount <= userAccounts.get(currentUser)) {
+                userAccounts.put(currentUser, userAccounts.get(currentUser) - amount);
+                userAccounts.put(recipient, userAccounts.get(recipient) + amount);
+                updateTransactionHistory("Transfer to " + recipient + ": -$" + amount);
+                transactionHistory.get(recipient).add("Transfer from " + currentUser + ": +$" + amount);
+                JOptionPane.showMessageDialog(null, "Transfer successful! Current balance: $" + userAccounts.get(currentUser), "Transfer", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid transfer amount or insufficient funds.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Recipient not found. Please enter a valid username.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static void showTransactionHistory() {
+        StringBuilder transactionSummary = new StringBuilder("Transaction History:\n");
+        LinkedList<String> transactions = transactionHistory.get(currentUser);
+        for (String transaction : transactions) {
+            transactionSummary.append(transaction).append("\n");
+        }
+        JOptionPane.showMessageDialog(null, transactionSummary.toString(), "Transaction History", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void updateTransactionHistory(String transaction) {
+        LinkedList<String> transactions = transactionHistory.get(currentUser);
+        transactions.addFirst(transaction);
+        // Keep only the last 5 transactions for brevity
+        if (transactions.size() > 5) {
+            transactions.removeLast();
+        }
+    }
+
+    private static void logout() {
+        JOptionPane.showMessageDialog(null, "Logout successful. Thank you, " + currentUser + "!", "Logout", JOptionPane.INFORMATION_MESSAGE);
+        currentUser = null;
+    }
+
+    private static void exitApp() {
+        JOptionPane.showMessageDialog(null, "Thank you for using the ERNESTWALLET   ! Goodbye.", "Exit", JOptionPane.INFORMATION_MESSAGE);
+        System.exit(0);
+    }
+}
